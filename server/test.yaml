@@ -1,0 +1,5 @@
+---
+scrape_interval: 10.0
+targets:
+  - "http://[::1]:9000/temperature" # IPv6
+  - "http://localhost:9000/temperature" # DNS
