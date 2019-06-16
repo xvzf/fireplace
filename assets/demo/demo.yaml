@@ -1,0 +1,48 @@
+---
+scrape_interval: 10.0
+
+# Targets
+targets:
+
+  - url: "http://10.0.0.2:9100/temperature" # DNS
+    threshold: 40.0
+    name: "raspberrypi"
+    every: 15.0
+    # We do not want to flood the admin :-)
+    alert_interval: 30.0
+    # HTTP Post Request gets send to the alert_targets which contains
+    # sensor metadata as wenn as the current temperature which was abover
+    # the threshold
+    alert_targets:
+      - "http://localhost:9111/telegram"
+
+  - url: "http://localhost:9000/temperature" # DNS
+    threshold: 32.0
+    name: "sensor0"
+    every: 5.0
+    # We do not want to flood the admin :-)
+    alert_interval: 15.0
+    # HTTP Post Request gets send to the alert_targets which contains
+    # sensor metadata as wenn as the current temperature which was abover
+    # the threshold
+    alert_targets:
+      - "http://localhost:9111/telegram"
+
+  - url: "http://localhost:9001/temperature" # DNS
+    threshold: 31.0
+    name: "sensor1"
+    every: 10.0
+    # We do not want to flood the admin :-)
+    alert_interval: 15.0
+    # HTTP Post Request gets send to the alert_targets which contains
+    # sensor metadata as wenn as the current temperature which was abover
+    # the threshold
+    alert_targets:
+      - "http://localhost:9111/telegram"
+
+# PostgreSQL + TimescaleDB configuration
+database:
+  host: localhost
+  user: postgres
+  password: password
+  database: postgres

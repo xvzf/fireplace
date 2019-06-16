@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fireplace-config
+  namespace: fireplace
+data:
+  server.yaml: |-
+    scrape_interval: 10.0
+
+    # Targets
+    targets:
+      - url: "http://fireplace-client:9000/temperature" # DNS
+        threshold: 32.0
+        name: "client"
+        every: 5.0
+
+    # PostgreSQL + TimescaleDB configuration
+    database:
+      host: Timescaledb
+      user: postgres
+      password: password
+      database: postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fireplace-server
+  namespace: fireplace
+spec:
+  selector:
+    app: fireplace
+    tier: server
+  ports:
+    - port: 8080
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fireplace-server
+  namespace: fireplace
+spec:
+  selector:
+    matchLabels:
+      app: fireplace
+      tier: server
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: fireplace
+        tier: server
+    spec:
+      containers:
+        - name: server
+          image: quay.io/xvzf/fireplace:latest
+          args: ["server", "--config=/config/server.yaml", "--host=0.0.0.0"]
+          imagePullPolicy: Always
+          resources:
+            limits:
+              memory: "256Mi"
+              cpu: "1000m"
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: fireplace-config-volume
+              mountPath: /config
+      volumes:
+        - name: fireplace-config-volume
+          configMap:
+            defaultMode: 420
+            name: fireplace-config

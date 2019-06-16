@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<title>VerteilteSysteme</title>
+	<base href="/">
+	<!-- external css -->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+		integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<!-- end css -->
+	<!-- external scripts (better download later)-->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0rc1/angular-route.min.js"></script>
+	<!--<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>-->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.1/Chart.min.js"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/0.5.5/chartjs-plugin-annotation.js"></script>
+	<!-- jquery for bootstrap -->
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+		integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+		crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+		integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+		crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+		integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+		crossorigin="anonymous"></script>
+	<!-- end scripts -->
+
+</head>
+
+<body ng-controller="IndexController">
+	<nav class="navbar navbar-expand navbar-dark bg-dark static-top">
+		<a class="navbar-brand mr-1" href="index.html">Verteilte Systeme - Serverraum Monitoring</a>
+	</nav>
+
+
+	<div class="container">
+		<div class="row">
+			<div class="col-sm-12">
+				<h1>Sensor-Einheiten: </h1>
+			</div>
+		</div>
+		<!-- data row for each sensor -->
+		<div ng-if="SensorList == null">
+			<h3>Tja... Da ist wohl etwas schief gelaufen!</h3>
+		</div>
+		<div ng-repeat="Sensor in SensorData">
+
+			<div class="row">
+				<div class="col-sm-12">
+					<div class="card mb-3" ng-model="Sensor">
+						<div class="card-header" id="cardheader{{Sensor.ID}}">
+							<i class="fas fa-chart-area"></i>
+
+							<div class="row">
+								<div class="col-sm-12">
+									<h2>{{Sensor.Name}}</h2>
+								</div>
+							</div>
+
+							<div class="row SensorBasicInfo">
+
+								<!--Current-->
+								<div class="col-xl-3 col-sm-6 mb-3">
+									<div class="card text-white bg-primary o-hidden h-100">
+										<div class="card-body">
+											<div class="mr-5">Current: </div>
+											<h2>{{Sensor.CurrentTemp}}°C</h2>
+										</div>
+									</div>
+								</div>
+
+								<!--Avg-->
+								<div class="col-xl-3 col-sm-6 mb-3">
+									<div class="card text-white bg-success o-hidden h-100">
+										<div class="card-body">
+											<div class="mr-5">Daily Average: </div>
+											<h2>{{Sensor.DailyAvgTemp}}°C</h2>
+										</div>
+									</div>
+								</div>
+
+								<!--Min-->
+								<div class="col-xl-3 col-sm-6 mb-3">
+									<div class="card text-white bg-info o-hidden h-100">
+										<div class="card-body">
+											<div class="mr-5">Daily Minimum: </div>
+											<h2>{{Sensor.DailyMinTemp}}°C</h2>
+										</div>
+									</div>
+								</div>
+
+								<!--Max-->
+								<div class="col-xl-3 col-sm-6 mb-3">
+									<div class="card text-white bg-danger o-hidden h-100">
+										<div class="card-body">
+											<div class="mr-5">Daily Maximum: </div>
+											<h2>{{Sensor.DailyMaxTemp}}°C</h2>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<!-- toggle chart button -->
+							<div class="row">
+								<div class="col-sm-3">
+									<button class="btn btn-primary" type="button" data-toggle="collapse"
+										data-target="#collapse{{Sensor.ID}}" aria-expanded="false"
+										aria-controls="collapseExample">
+										Verlauf anzeigen
+									</button>
+								</div>
+								<div class="col-sm-3">
+									<div class="alert alert-success" role="alert">
+										Interval Average: {{Sensor.UltAvgTemp}} °C
+									</div>
+								</div>
+								<div class="col-sm-3">
+									<div class="alert alert-info" role="alert">
+										Interval Minimum: {{Sensor.UltMinTemp}} °C
+									</div>
+								</div>
+								<div class="col-sm-3">
+									<div class="alert alert-danger" role="alert">
+										Interval Maximum: {{Sensor.DailyMaxTemp}} °C
+									</div>
+								</div>
+							</div>
+
+						</div>
+						<!-- card body -->
+						<div class="card-body collapse" id="collapse{{Sensor.ID}}">
+							<div class="container">
+								<div class="row">
+									<!-- update button -->
+									<div class="col-sm-2">
+										<button class="btn btn-primary" type="button" ng-click="Sensor.mod()">
+											<!-- updateModel(Sensor.ID) -->
+											Update
+										</button>
+									</div>
+									<!-- interval -->
+									<div class="col-sm-3">
+										<div class="form-group row">
+											<label for="example-number-input" class="col-6 col-form-label"
+												style="text-align: right;">Interval (sec):</label>
+											<div class="col-6">
+												<input class="form-control" type="number" value="23"
+													id="example-number-input" ng-model="Sensor.interval">
+											</div>
+										</div>
+									</div>
+									<!-- latest -->
+									<div class="col-sm-3">
+										<div class="form-group row">
+											<label for="example-number-input" class="col-6 col-form-label"
+												style="text-align: right;">Latest:</label>
+											<div class="col-6">
+												<input class="form-control" type="number" value="43"
+													id="example-number-input" ng-model="Sensor.latest">
+											</div>
+										</div>
+									</div>
+									<!-- offset -->
+									<div class="col-sm-3">
+										<div class="form-group row">
+											<label for="example-number-input" class="col-6 col-form-label"
+												style="text-align: right;">Offset (sec):</label>
+											<div class="col-6">
+												<input class="form-control" type="number" value="23"
+													id="example-number-input" ng-model="Sensor.offset">
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<ul class="nav nav-tabs" id="myTab" role="tablist">
+								<li class="nav-item">
+									<a class="nav-link active" id="graph-tab{{Sensor.ID}}" data-toggle="tab"
+										href="#graph{{Sensor.ID}}" role="tab" aria-controls="graph{{Sensor.ID}}"
+										aria-selected="true">Graph</a>
+								</li>
+								<li class="nav-item">
+									<a class="nav-link" id="table-tab{{Sensor.ID}}" data-toggle="tab"
+										href="#table{{Sensor.ID}}" role="tab" aria-controls="table{{Sensor.ID}}"
+										aria-selected="false">Table</a>
+								</li>
+							</ul>
+
+							<div class="tab-content" id="myTabContent">
+								<div class="tab-pane fade show active" id="graph{{Sensor.ID}}" role="tabpanel"
+									aria-labelledby="graph-tab">
+									<div class="chartjs-size-monitor">
+										<div class="chartjs-size-monitor-expand">
+											<div class=""></div>
+										</div>
+										<div class="chartjs-size-monitor-shrink">
+											<div class=""></div>
+										</div>
+									</div>
+									<canvas id="Canvas{{Sensor.ID}}" width="1940" height="582"
+										style="display: block; height: 291px; width: 970px;"
+										class="chartjs-render-monitor"></canvas>
+								</div>
+
+								<div class="tab-pane fade" id="table{{Sensor.ID}}" role="tabpanel"
+									aria-labelledby="table-tab">
+									<table class="table">
+										<thead>
+											<tr>
+												<th>#</th>
+												<th scope="col">Time</th>
+												<th scope="col">AvgTemp</th>
+												<th scope="col">MinTemp</th>
+												<th scope="col">MaxTemp</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr ng-repeat="ttstamp in Sensor.TTStamps">
+												<th>{{$index}}</th>
+												<td>{{ttstamp.Time}}</td>
+												<td>{{ttstamp.AvgTemp}}</td>
+												<td>{{ttstamp.MinTemp}}</td>
+												<td>{{ttstamp.MaxTemp}}</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+
+						</div>
+						<div class="card-footer small text-muted">Last Update: {{Sensor.LastUpdated}}</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+	</div>
+
+
+	<!-- Angular Module + Controller (seperate later)-->
+	<script src="/main.js"></script>
+</body>
+
+</html>
