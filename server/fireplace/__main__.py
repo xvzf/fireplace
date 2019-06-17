@@ -2,27 +2,20 @@ import asyncio
 import signal
 import functools
 import aiohttp
+from sanic import Sanic
 from pprint import pprint
-from . import logger, load_config, Config
+from . import logger, load_config, Config, Target
 from .scraper import Scraper
 from .scheduler import AsyncScheduler
 
-
-def teardown():
-    """ Safely teardown all running coroutines """
-    logger.info("Stop signal, canceling all coroutines")
-    for t in asyncio.Task.all_tasks():
-        t.cancel()
-    logger.info("Canceled all running coroutines")
-    asyncio.get_event_loop().stop()
-    logger.info("Eventloop stopped")
+app = Sanic(__name__)
 
 
-def get_scrape(target: str):
+def get_scrape(target: Target):
     """ Dummy scraper """
     async def scrape():
         try:
-            t = await Scraper.read_sensor(target)
+            t = await Scraper.read_sensor(target.url)
             logger.info(f"{t}")
         except:
             logger.warning(f"Could not retrieve data from {target}")
@@ -30,19 +23,14 @@ def get_scrape(target: str):
     return scrape
 
 
-async def main(config: Config):
+@app.listener("before_server_start")
+async def setup_fireplace(app, loop):
     """ Main entrypoint, creates all coroutines and returns """
-    s = AsyncScheduler(loop=asyncio.get_event_loop())
+    config = load_config("test.yaml")
+    s = AsyncScheduler(loop=loop)
     for target in config.targets:
         s.schedule_every(config.scrape_interval, get_scrape(target))
 
 
 if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    loop.add_signal_handler(signal.SIGHUP, teardown)
-    loop.add_signal_handler(signal.SIGTERM, teardown)
-    loop.create_task(main(load_config("test.yaml")))
-    try:
-        loop.run_forever()
-    except KeyboardInterrupt:
-        teardown()
+    app.run("::", port=8080)

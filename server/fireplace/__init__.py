@@ -15,12 +15,29 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
+class Target:
+    """ target config store """
+    url: str
+    threshold: float
+    name: str
+    every: float
+
+
 class Config:
     """ Config store """
+
     # List of all targets
-    targets: List[str]
+    targets = None # : List[Target]
     # Scrape interval
-    scrape_interval: float = 10.0
+    scrape_interval: float
+
+    def __init__(self, targets: List[dict], scrape_interval: float = 10):
+        """ Initialize config """
+        self.scrape_interval = scrape_interval
+        self.targets = []
+        # Workaround until nested dataclasses are working :)
+        for target in targets:
+            self.targets.append(Target(**target))
 
 
 def load_config(path: str) -> Config:
@@ -29,8 +46,12 @@ def load_config(path: str) -> Config:
     @param path: Path of the configuration file
     @returns: Config object
     """
+    global config
     with open(path, "r") as cfg:
         l = load(cfg, Loader=Loader)
         config = Config(**l)
         logger.info(f"Loaded config {path}")
         return config
+
+
+config = Config(targets=[])
