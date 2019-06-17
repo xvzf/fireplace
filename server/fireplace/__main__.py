@@ -16,7 +16,7 @@ def get_scrape(target: Target):
     async def scrape():
         try:
             t = await Scraper.read_sensor(target.url)
-            logger.info(f"{t}")
+            logger.info(f"{target}: {t}")
         except:
             logger.warning(f"Could not retrieve data from {target}")
 

@@ -15,6 +15,15 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
+class Database:
+    """ Database config store """
+    host: str
+    user: str
+    password: str
+    database: str
+
+
+@dataclass
 class Target:
     """ target config store """
     url: str
@@ -27,13 +36,16 @@ class Config:
     """ Config store """
 
     # List of all targets
-    targets = None # : List[Target]
+    targets: List[Target]
+    # Database connection settings
+    database: Database
     # Scrape interval
     scrape_interval: float
 
-    def __init__(self, targets: List[dict], scrape_interval: float = 10):
+    def __init__(self, targets: List[dict], database: dict, scrape_interval: float = 10):
         """ Initialize config """
         self.scrape_interval = scrape_interval
+        self.database = database
         self.targets = []
         # Workaround until nested dataclasses are working :)
         for target in targets:
@@ -54,4 +66,8 @@ def load_config(path: str) -> Config:
         return config
 
 
-config = Config(targets=[])
+config = Config(targets=[], database={
+    "user": "none",
+    "password": "none",
+    "database": "none"
+})
