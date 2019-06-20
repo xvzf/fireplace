@@ -16,5 +16,5 @@ targets:
 database:
   host: localhost
   user: postgres
-  password: postgres
+  password: password
   database: postgres
