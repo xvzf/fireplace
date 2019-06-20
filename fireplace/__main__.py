@@ -45,6 +45,4 @@ async def setup_fireplace(app, loop):
 
 
 if __name__ == "__main__":
-    # @TODO Currently there can only be one worker until we
-    # get each worker to create a own database connection
-    app.run("::", port=8080, workers=1)
+    app.run("::", port=8080)
