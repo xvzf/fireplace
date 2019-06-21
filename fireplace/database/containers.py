@@ -3,7 +3,19 @@ from datetime import datetime
 
 @dataclass
 class Metric:
-    """ Metric timepoint """
+    """ Metric timepoint
+    
+    !!! if you change the datatypes of this class, adapt MetricMeta !!!
+    """
     time: datetime
     name: str
     temperature: float
+
+
+@dataclass
+class Statistics:
+    """ Target statistics """
+    min_temperature: float
+    max_temperature: float
+    avg_temperature: float
+    data_count: int
