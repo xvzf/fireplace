@@ -32,7 +32,6 @@ class MeasurementBuffer:
 
         for m in self.ring:
             timediff = m.time - from_time
-            print(timediff)
             if timediff.total_seconds() < 0:
                 # Measurement is older than start time and not requested
                 break
