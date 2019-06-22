@@ -6,7 +6,7 @@ from .. import logger
 
 def mapper(Target: dataclass):
     """ Maps SQL queries to dataclasses """
-    def decorator(query: str):
+    def decorator(query):
 
         @wraps(query)
         async def wrapper(db: asyncpg.pool.Pool, *args, **kwargs) -> dataclass:
