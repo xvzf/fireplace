@@ -1,4 +1,4 @@
-from . import create_server
+from .server import create_server
 
 if __name__ == "__main__":
     app = create_server()

@@ -1,10 +1,15 @@
 import asyncio
 from sanic import Sanic
+from sanic_openapi import swagger_blueprint
 
 from .scraper import Scraper
 from .database import MetricDAO, initialize_db
 from . import logger, config
 from .scheduler import AsyncScheduler
+
+# Blueprint Endpoints
+from .api import api
+from .discovery import discovery
 
 
 def get_scrape(app: Sanic, target: config.Target):
@@ -31,4 +36,17 @@ async def setup_server(app: Sanic, loop: asyncio.AbstractEventLoop):
     # @TODO improve!
     s = AsyncScheduler(loop=loop)
     for target in app.fireplace.targets:
-        s.schedule_every(app.fireplace.scrape_interval, get_scrape(app, target))
+        s.schedule_every(app.fireplace.scrape_interval,
+                         get_scrape(app, target))
+
+
+def create_server():
+    app = Sanic("fireplace_server")
+    app.register_blueprint(api)
+    app.register_blueprint(discovery)
+    app.register_blueprint(swagger_blueprint)
+
+    # Startup handler for fireplace server
+    app.register_listener(setup_server, "before_server_start")
+
+    return app
