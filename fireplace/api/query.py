@@ -3,6 +3,7 @@ from sanic_openapi import doc
 from typing import List
 from datetime import datetime
 from .containers import Metric as MetricAPI, Statistics as StatisticsAPI
+from .helper import query_arg
 from . import api_v1
 from .. import logger
 from ..database import(
@@ -27,24 +28,19 @@ async def get_current_temp(request, target):
 
 @api_v1.route("/stats/<target>")
 @doc.summary("Statistics (min, max, avg) from a targed (based on config name and interval in seconds)")
-@doc.consumes({
-    "timeframe": doc.String("Timeframe in which data should be analysed, max 2678400 (1 month)")
-})
 @doc.response(200, StatisticsAPI, description="Target statistics")
 @doc.response(404, None, description="Sensor was not scraped yet / does not exist")
-async def get_statistics(request, target: str):
-    timeframe = 3600
-    try:
-        arg_timeframe = int(request.args.get("timeframe", 3600))
-        timeframe = arg_timeframe if arg_timeframe <= 2678400 else timeframe
-    except:
-        logger.warning(f"Wrong query parameter for statistics: {request.args.get('timeframe')}")
-    
-    tmp: List[Statistics] = await MetricDAO.get_stats(  # pylint: disable-msg=too-many-function-args
+@query_arg("offset", int, description="Time offset in seconds")
+@query_arg("interval", int, description="Interval in seconds")
+@query_arg("latest", int, description="Get the latest n data points")
+async def get_stats(request, target: str, interval: int, offset: int, latest: int):
+
+    tmp: List[Statistics] = await MetricDAO.get_stats(  # pylint: disable-msg=redundant-keyword-arg
         request.app.db,
-        target,
-        int(timeframe),
-        datetime.now()
+        name=target,
+        interval_seconds=interval,
+        offset_seconds=offset,
+        limit=latest
     )
 
-    return json(tmp[0]) if tmp else json(None, status=404)
+    return json(tmp) if tmp else json(None, status=404)

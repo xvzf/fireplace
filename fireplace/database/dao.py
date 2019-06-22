@@ -31,28 +31,27 @@ class MetricDAO:
     async def get_current(name: str) -> List[Metric]:
         """ Queries the current temperature of a sensor """
         return "select * from metrics where name = $1 order by time desc limit 1", name
-
+    
     @staticmethod
     @mapper(Statistics)
-    async def get_stats(name: str, timeframe: int, start_time: datetime) -> List[Statistics]:
-        """ Queries target statistics """
+    async def get_stats(name: str, interval_seconds: int, offset_seconds: int, limit: int):
+        """ Wrapper around the time_bucket operation """
         return (
             """
             select
-                min(temperature) as min_temperature
-                , max(temperature) as max_temperature
-                , avg(temperature) as avg_temperature
-                , count(*) as data_count
+                time_bucket($2 * interval '1 second', m.time) as time
+                , min(m.temperature) as min_temperature
+                , max(m.temperature) as max_temperature
+                , avg(m.temperature) as avg_temperature
             from
-                metrics
+                metrics m
             where
-                name = $1 and
-                time between
-                    TO_TIMESTAMP($3) - $2 * interval '1 second'
-                    and
-                    TO_TIMESTAMP($3)
+                name = $1
+            group by time
+            order by time desc
+            limit $3
             """,
             name,
-            timeframe,
-            datetime.timestamp(start_time)
+            interval_seconds,
+            limit
         )

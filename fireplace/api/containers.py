@@ -10,8 +10,7 @@ class Metric:
 
 class Statistics:
     """ Statistics data structure for API doc """
+    time = int
     min_temperature = float
     max_temperature = float
     avg_temperature = float
-    data_count = int
-    timeframe = int

@@ -15,7 +15,7 @@ class Metric:
 @dataclass
 class Statistics:
     """ Target statistics """
+    time: datetime
     min_temperature: float
     max_temperature: float
     avg_temperature: float
-    data_count: int
