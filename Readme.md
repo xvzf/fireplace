@@ -10,7 +10,7 @@ For startup options, use the `--help` tag.
 
 # Getting a dev environment up and running
 ## Python setup
-> **ATTENTION** You need at least Python 3.5 for running the server
+> **ATTENTION** You need at least Python 3.7 for running the server
 
 You can use a python virtualenv for installing all dependencies:
 
