@@ -1,5 +1,6 @@
 import click
 from .server import create_server
+from .client import create_client
 
 
 @click.group()
@@ -12,8 +13,19 @@ def cli():
 @click.option("--host", default="::", help="Host fireplace is listening on for queries/discovery")
 @click.option("--port", default=8080, help="Port to listen on")
 def server(config: str, host: str, port: int):
-    """ Startup server """
+    """ Starts server """
     app = create_server(config)
+    app.run(host=host, port=port)
+
+
+@cli.command()
+@click.option("--host", default="::", help="Host fireplace client is listening on for queries")
+@click.option("--port", default=9000, help="Port to listen on")
+@click.option("--name", default="dont_use_this_name", help="Name the client is using for discovery")
+@click.option("--server", default="localhost:8080", help="Server address for sending discovery requests")
+def client(host: str, port: int, name: str, server: str):
+    """ Starts client """
+    app = create_client(name, server)
     app.run(host=host, port=port)
 
 
