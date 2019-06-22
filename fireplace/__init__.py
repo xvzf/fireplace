@@ -1,32 +1,28 @@
 import logging
 import asyncpg
-from yaml import load
-try:
-    from yaml import CLoader as Loader, CDumper as Dumper
-except ImportError:
-    from yaml import Loader, Dumper
-from .config import Config, Database, Target
-
+from sanic import Sanic
+from sanic_openapi import swagger_blueprint
 
 # Set debug level for now
 logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(message)s", level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
+# Blueprint Endpoints
+from .api import api
+from .discovery import discovery
 
-# To be filled after initialization :-)
-config: Config = None
+# Fireplace related setup routines
+from .fireplace import setup_server
 
 
-def load_config(path: str) -> Config:
-    """ Load configuration
+def create_server():
+    app = Sanic("fireplace_server")
+    app.register_blueprint(api)
+    app.register_blueprint(discovery)
+    app.register_blueprint(swagger_blueprint)
 
-    @param path: Path of the configuration file
-    @returns: Config object
-    """
-    global config
-    with open(path, "r") as cfg:
-        l = load(cfg, Loader=Loader)
-        config = Config(**l)
-        logger.info(f"Loaded config {path}")
-        return config
+    # Startup handler for fireplace server
+    app.register_listener(setup_server, "before_server_start")
+
+    return app
