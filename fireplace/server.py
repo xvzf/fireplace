@@ -28,19 +28,19 @@ def get_scrape(app: Sanic, target: config.Target):
     return scrape
 
 
-async def setup_server(app: Sanic, loop: asyncio.AbstractEventLoop):
-    """ Main entrypoint, creates all coroutines and returns """
-    config.load_config(app, "test.yaml")  # @TODO
-    await initialize_db(app)
+def create_server(config_path: str):
 
-    # @TODO improve!
-    s = AsyncScheduler(loop=loop)
-    for target in app.fireplace.targets:
-        s.schedule_every(app.fireplace.scrape_interval,
-                         get_scrape(app, target))
+    async def setup_server(app: Sanic, loop: asyncio.AbstractEventLoop):
+        """ Main entrypoint, creates all coroutines and returns """
+        config.load_config(app, config_path)  # @TODO
+        await initialize_db(app)
 
+        # @TODO improve!
+        s = AsyncScheduler(loop=loop)
+        for target in app.fireplace.targets:
+            s.schedule_every(app.fireplace.scrape_interval,
+                             get_scrape(app, target))
 
-def create_server():
     app = Sanic("fireplace_server")
     app.register_blueprint(api)
     app.register_blueprint(discovery)
