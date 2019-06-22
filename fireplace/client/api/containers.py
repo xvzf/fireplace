@@ -1,3 +1,4 @@
+from datetime import datetime
 
 
 class Target:
@@ -5,3 +6,8 @@ class Target:
     threshold = float
     name = str
     every = float
+
+
+class Measurement:
+    time = datetime
+    temperature = float
