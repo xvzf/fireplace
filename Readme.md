@@ -1,12 +1,17 @@
 # Fireplace
-> Start server with `python -m fireplace`
+> Start server with `python -m fireplace server`, dummy client with `python -m fireplace client`
+
+For startup options, use the `--help` tag.
+
 
 # Configuration
 > A sample configuration file is located in the root folder called `test.yaml` - setting its path via environment variables is on the TODO list
 
+
 # Getting a dev environment up and running
 ## Python setup
 > **ATTENTION** You need at least Python 3.5 for running the server
+
 You can use a python virtualenv for installing all dependencies:
 
 ```
