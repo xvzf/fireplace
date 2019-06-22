@@ -1,5 +1,6 @@
 import asyncio
 import random
+import pytz
 from datetime import datetime
 from sanic import Sanic
 from sanic.response import json
@@ -17,7 +18,7 @@ async def setup_client(app: Sanic, loop: asyncio.AbstractEventLoop):
     async def measure():
         val = await Sensor.read()
         app.buffer.add(Measurement(
-            time=datetime.now(),
+            time=datetime.utcnow().replace(tzinfo=pytz.utc),
             temperature=val
         ))
 

@@ -14,24 +14,22 @@ class MetricDAO:
         return "select * from metrics"
 
     @staticmethod
-    async def add_now(db: asyncpg.pool.Pool, name: str, temperature: float) -> bool:
-        """ Adds value to timeseries with the current timestamp """
+    async def add_many(db: asyncpg.pool.Pool, metrics: List[Metric]) -> bool:
+        """ Adds many metrics to the database """
         async with db.acquire() as conn:
-            logger.debug(await conn.execute(
-                "insert into metrics (time, name, temperature) values (TO_TIMESTAMP($1), $2, $3)",
-                datetime.timestamp(datetime.now()),
-                name,
-                temperature
-            ))
-        # @TODO
-        return True
+            logger.debug(await conn.copy_records_to_table(
+                "metrics",
+                records=[(m.time, m.name, m.temperature) for m in metrics])
+            )
+            return True
+        return False
 
     @staticmethod
     @mapper(Metric)
     async def get_current(name: str) -> List[Metric]:
         """ Queries the current temperature of a sensor """
         return "select * from metrics where name = $1 order by time desc limit 1", name
-    
+
     @staticmethod
     @mapper(Statistics)
     async def get_stats(name: str, interval_seconds: int, offset_seconds: int, limit: int):

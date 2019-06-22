@@ -12,21 +12,6 @@ from .api import api
 from .discovery import discovery
 
 
-def get_scrape(app: Sanic, target: config.Target):
-    """ Creates a scrape function which retrieves data from a specific
-    target and adds the datapoint to the database :-)
-    """
-    async def scrape():
-        try:
-            data = await Scraper.read_sensor(target.url)
-            await MetricDAO.add_now(app.db, target.name, data["temperature"])
-            logger.info(f"{target}: {data}")
-        except ScrapeException as e:
-            logger.warning(f"Could not retrieve data from {target}")
-        except Exception as e:
-            logger.exception(e)
-    return scrape
-
 
 def create_server(config_path: str):
 
@@ -39,7 +24,7 @@ def create_server(config_path: str):
         s = AsyncScheduler(loop=loop)
         for target in app.fireplace.targets:
             s.schedule_every(app.fireplace.scrape_interval,
-                             get_scrape(app, target))
+                             Scraper.get_handler(app, target))
 
     app = Sanic("fireplace_server")
     app.register_blueprint(api)

@@ -1,4 +1,5 @@
 import collections
+import pytz
 from dataclasses import is_dataclass, asdict
 from datetime import datetime
 from ujson import dumps as ujson_dumps
@@ -14,7 +15,7 @@ def dumps(obj):
         elif isinstance(o, list) or isinstance(o, collections.deque):
             return [convert_to_basic(e) for e in o]
         elif isinstance(o, datetime):
-            return o.isoformat()
+            return o.replace(tzinfo=pytz.utc).isoformat()
         else:
             return o
 

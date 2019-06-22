@@ -1,4 +1,5 @@
 import collections
+import pytz
 from datetime import datetime
 from typing import List
 from . import container
@@ -31,7 +32,7 @@ class MeasurementBuffer:
         tmp = collections.deque()
 
         for m in self.ring:
-            timediff = m.time - from_time
+            timediff = m.time.replace(tzinfo=pytz.utc) - from_time.replace(tzinfo=pytz.utc)
             if timediff.total_seconds() < 0:
                 # Measurement is older than start time and not requested
                 break

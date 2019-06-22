@@ -1,5 +1,10 @@
 import http3
-import json
+import pytz
+from ujson import loads
+from sanic import Sanic
+from datetime import datetime
+from .database import MetricDAO, Metric
+from .import config
 from .. import logger
 
 
@@ -10,7 +15,29 @@ class ScrapeException(Exception):
 class Scraper:
 
     @staticmethod
-    async def read_sensor(target: str) -> dict:
+    def get_handler(app: Sanic, target: config.Target):
+
+        async def scrape():
+            try:
+                last_db = await MetricDAO.get_current(app.db, target.name)  # pylint: disable-msg=too-many-function-args
+                # Extract latest scrape time
+                last_scraped = last_db[0].time if last_db else datetime.fromtimestamp(
+                    0).replace(tzinfo=pytz.utc)
+                metrics = await Scraper.read_sensor(target, last_scraped)
+
+                # Add retrieved values to database
+                await MetricDAO.add_many(app.db, metrics)
+
+            except ScrapeException as e:
+                logger.warning(f"Could not retrieve data from {target}")
+                pass
+            except Exception as e:
+                logger.exception(e)
+
+        return scrape
+
+    @staticmethod
+    async def read_sensor(target: config.Target, last_scraped: datetime) -> Metric:
         """ Retrieve sensor data from a target (IPv4, IPv6 or DNS)
 
         @param target: Target address
@@ -18,9 +45,16 @@ class Scraper:
         """
         async with http3.AsyncClient() as client:
             try:
-                resp = await client.get(target)
+                resp = await client.get(target.url, params={
+                    "from_time": last_scraped.isoformat()
+                })
                 if resp.status_code != 200:
                     raise ScrapeException
-                return json.loads(resp.text)
+                return [Metric(
+                    name=target.name,
+                    time=datetime.fromisoformat(
+                        i["time"]).replace(tzinfo=pytz.utc),
+                    temperature=i["temperature"]
+                ) for i in loads(resp.text)]
             except ConnectionRefusedError:
                 raise ScrapeException

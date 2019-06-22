@@ -4,5 +4,6 @@ aiohttp>=3.5.4
 asyncpg>=0.18.3
 pyyaml>=5.1.1
 sanic-openapi>=0.5.3
-Click==7.0
+Click>=7.0
 requests-async>=0.6.2
+pytz==2019.1
