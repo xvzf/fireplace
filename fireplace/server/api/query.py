@@ -7,6 +7,7 @@ from . import api_v1
 from .. import logger
 from ..database import MetricDAO, Metric, Statistics
 from ...helper.api import query_arg
+from ...helper.json import dumps
 
 
 @api_v1.route("/current/<target>")
@@ -19,7 +20,7 @@ async def get_current_temp(request, target):
         target
     )
 
-    return json(tmp[0]) if tmp else json(None, status=404)
+    return json(tmp[0], dumps=dumps) if tmp else json(None, status=404)
 
 
 @api_v1.route("/stats/<target>")
@@ -39,4 +40,4 @@ async def get_stats(request, target: str, interval: int, offset: int, latest: in
         limit=latest
     )
 
-    return json(tmp) if tmp else json(None, status=404)
+    return json(tmp, dumps=dumps) if tmp else json(None, status=404)

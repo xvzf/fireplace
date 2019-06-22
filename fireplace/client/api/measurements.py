@@ -3,6 +3,7 @@ from sanic.response import json
 from sanic_openapi import doc
 from . import api
 from ...helper.api import query_arg
+from ...helper.json import dumps
 
 
 @api.route("/temperature")
@@ -12,5 +13,4 @@ from ...helper.api import query_arg
     datetime.fromisoformat,
     description="Only measurements starting from the given timepoint")
 async def temperature(request, from_time: datetime):
-    print(len(request.app.buffer.ring))
-    return json(request.app.buffer.get_from(from_time))
+    return json(request.app.buffer.get_from(from_time), dumps=dumps)

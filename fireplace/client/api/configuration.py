@@ -3,6 +3,7 @@ from sanic_openapi import doc
 from . import api
 from ...helper.api import query_arg
 
+
 @api.route("/reconfigure")
 @doc.description("Reconfigure the maximum temperature and measurement interval")
 @doc.response(200, None, "Reconfiguration successful")
