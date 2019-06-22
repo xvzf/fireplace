@@ -1,5 +1,10 @@
-import aiohttp
+import http3
+import json
 from .. import logger
+
+
+class ScrapeException(Exception):
+    pass
 
 
 class Scraper:
@@ -11,6 +16,11 @@ class Scraper:
         @param target: Target address
         @returns: {temperature: ...}
         """
-        async with aiohttp.ClientSession() as sess:
-            async with sess.get(target) as resp:
-                return await resp.json()
+        async with http3.AsyncClient() as client:
+            try:
+                resp = await client.get(target)
+                if resp.status_code != 200:
+                    raise ScrapeException
+                return json.loads(resp.text)
+            except ConnectionRefusedError:
+                raise ScrapeException

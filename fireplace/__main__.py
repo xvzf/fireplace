@@ -22,10 +22,10 @@ def server(config: str, host: str, port: int):
 @click.option("--host", default="::", help="Host fireplace client is listening on for queries")
 @click.option("--port", default=9000, help="Port to listen on")
 @click.option("--name", default="dont_use_this_name", help="Name the client is using for discovery")
-@click.option("--server", default="localhost:8080", help="Server address for sending discovery requests")
+@click.option("--server", default="http://localhost:8080/discovery/", help="Server address for sending discovery requests")
 def client(host: str, port: int, name: str, server: str):
     """ Starts client """
-    app = create_client(name, server)
+    app = create_client(name, server + name)
     app.run(host=host, port=port)
 
 

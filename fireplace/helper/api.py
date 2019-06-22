@@ -5,6 +5,10 @@ from sanic_openapi import doc
 def query_arg(name, convert_func, error_handler_predef=None, description: str = "Not documented."):
     """ Helper wrapper for converting query arguments and passing them to the function as
     keyword argument
+
+    @param name: Query argument name
+    @param convert_func: Function to convert string to desired datatype
+    @praram description: Description for openapi
     """
 
     async def error_handler(request, *args, **kwargs):
@@ -21,7 +25,7 @@ def query_arg(name, convert_func, error_handler_predef=None, description: str = 
                 return await f(request, *args, **{**kwargs, name: val})
             except ValueError as e:
                 return await (error_handler_predef or error_handler)(request, *args, **kwargs)
-            except:
+            except Exception as e:
                 raise e
         return wrapper
 

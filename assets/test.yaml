@@ -3,13 +3,9 @@ scrape_interval: 10.0
 
 # Targets
 targets:
-  - url: "http://[::1]:9000/temperature" # IPv6
-    threshold: 31.0
-    name: "server1"
-    every: 5.0
   - url: "http://localhost:9000/temperature" # DNS
     threshold: 32.0
-    name: "server2"
+    name: "server1"
     every: 5.0
 
 # PostgreSQL + TimescaleDB configuration

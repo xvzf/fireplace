@@ -3,14 +3,10 @@ from sanic_openapi import doc
 from typing import List
 from datetime import datetime
 from .containers import Metric as MetricAPI, Statistics as StatisticsAPI
-from .helper import query_arg
 from . import api_v1
 from .. import logger
-from ..database import(
-    MetricDAO,
-    Metric,
-    Statistics
-)
+from ..database import MetricDAO, Metric, Statistics
+from ...helper.api import query_arg
 
 
 @api_v1.route("/current/<target>")

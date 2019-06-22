@@ -4,7 +4,7 @@ from sanic_openapi import swagger_blueprint
 
 from .. import logger, config
 from ..scheduler import AsyncScheduler
-from .scraper import Scraper
+from .scraper import Scraper, ScrapeException
 from .database import MetricDAO, initialize_db
 
 # Blueprint Endpoints
@@ -21,10 +21,10 @@ def get_scrape(app: Sanic, target: config.Target):
             data = await Scraper.read_sensor(target.url)
             await MetricDAO.add_now(app.db, target.name, data["temperature"])
             logger.info(f"{target}: {data}")
+        except ScrapeException as e:
+            logger.warning(f"Could not retrieve data from {target}")
         except Exception as e:
             logger.exception(e)
-
-            logger.warning(f"Could not retrieve data from {target}")
     return scrape
 
 
