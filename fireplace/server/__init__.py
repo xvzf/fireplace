@@ -2,10 +2,10 @@ import asyncio
 from sanic import Sanic
 from sanic_openapi import swagger_blueprint
 
+from .. import logger, config
+from ..scheduler import AsyncScheduler
 from .scraper import Scraper
 from .database import MetricDAO, initialize_db
-from . import logger, config
-from .scheduler import AsyncScheduler
 
 # Blueprint Endpoints
 from .api import api

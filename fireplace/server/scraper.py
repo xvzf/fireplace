@@ -1,5 +1,5 @@
 import aiohttp
-from . import logger
+from .. import logger
 
 
 class Scraper:
