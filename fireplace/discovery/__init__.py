@@ -1,4 +1,3 @@
-from . import endpoint
 from sanic import Blueprint
 
 discovery = Blueprint(
