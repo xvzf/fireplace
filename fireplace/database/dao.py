@@ -38,18 +38,20 @@ class MetricDAO:
         """ Wrapper around the time_bucket operation """
         return (
             """
-            select
-                time_bucket($2 * interval '1 second', m.time) as time
-                , min(m.temperature) as min_temperature
-                , max(m.temperature) as max_temperature
-                , avg(m.temperature) as avg_temperature
-            from
-                metrics m
-            where
-                name = $1
-            group by time
-            order by time desc
-            limit $3
+            select _time as time, min_temperature, max_temperature, avg_temperature from (
+                select
+                    time_bucket($2 * interval '1 second', time) as _time
+                    , min(temperature) as min_temperature
+                    , max(temperature) as max_temperature
+                    , avg(temperature) as avg_temperature
+                from
+                    metrics
+                where
+                    name = $1
+                group by _time
+                order by _time desc
+                limit $3
+            ) as aggregated
             """,
             name,
             interval_seconds,
