@@ -6,9 +6,9 @@ def query_arg(name, convert_func, error_handler_predef=None, description: str = 
     """ Helper wrapper for converting query arguments and passing them to the function as
     keyword argument
 
-    @param name: Query argument name
-    @param convert_func: Function to convert string to desired datatype
-    @praram description: Description for openapi
+    :param name: Query argument name
+    :param convert_func: Function to convert string to desired datatype
+    :param description: Description for openapi
     """
 
     async def error_handler(request, *args, **kwargs):

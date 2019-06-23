@@ -16,6 +16,7 @@ class Scraper:
 
     @staticmethod
     def get_handler(app: Sanic, target: config.Target):
+        """ Generats the async scrape function which handles *EVERYTHING* """
 
         async def scrape():
             try:
@@ -40,8 +41,8 @@ class Scraper:
     async def read_sensor(target: config.Target, last_scraped: datetime) -> Metric:
         """ Retrieve sensor data from a target (IPv4, IPv6 or DNS)
 
-        @param target: Target address
-        @returns: {temperature: ...}
+        :param target: Target address
+        :returns: {temperature: ...}
         """
         async with http3.AsyncClient() as client:
             try:

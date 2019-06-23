@@ -20,8 +20,8 @@ class AsyncScheduler:
     def schedule_every(self, seconds: float, to_schedule: Awaitable):
         """ Schedules a coroutine 
 
-        @param seconds: Number of seconds to sleep between tasks; float
-        @param to_schedule: Coroutine generator to schedule
+        :param seconds: Number of seconds to sleep between tasks; float
+        :param to_schedule: Coroutine generator to schedule
         """
         # @TODO possibly leaking coroutines
         async def dispatch():

@@ -50,8 +50,8 @@ class Config:
 def load_config(app: Sanic, path: str) -> Config:
     """ Load configuration
 
-    @param path: Path of the configuration file
-    @returns: Config object
+    :param path: Path of the configuration file
+    :returns: Config object
     """
     with open(path, "r") as cfg:
         l = load(cfg, Loader=Loader)
