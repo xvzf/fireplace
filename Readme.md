@@ -1,11 +1,39 @@
 # Fireplace
+[![Docker Repository on Quay](https://quay.io/repository/xvzf/fireplace/status "Docker Repository on Quay")](https://quay.io/repository/xvzf/fireplace)
+
 > Start server with `python -m fireplace server`, dummy client with `python -m fireplace client`
 
 For startup options, use the `--help` tag.
 
 
 # Configuration
-> A sample configuration file is located in the root folder called `test.yaml` - setting its path via environment variables is on the TODO list
+> A sample configuration file is located in the root folder called `test.yaml`. You can configure the application via command line options.
+
+```
+[lola ~] sudo podman run quay.io/xvzf/fireplace server --help
+Usage: entrypoint.py server [OPTIONS]
+
+  Starts server
+
+Options:
+  --config TEXT   Fireplace configuration file
+  --host TEXT     Host fireplace is listening on for queries/discovery
+  --port INTEGER  Port to listen on
+  --help          Show this message and exit.
+
+
+[lola ~] sudo podman run quay.io/xvzf/fireplace client --help
+Usage: entrypoint.py client [OPTIONS]
+
+  Starts client
+
+Options:
+  --host TEXT     Host fireplace client is listening on for queries
+  --port INTEGER  Port to listen on
+  --name TEXT     Name the client is using for discovery
+  --server TEXT   Server address for sending discovery requests
+  --help          Show this message and exit.
+```
 
 
 # Getting a dev environment up and running
@@ -32,3 +60,7 @@ After setting up docker is done, you can spin up an instance by executing:
 docker run -d --name timescaledb -p 127.0.0.1:5432:5432 -e POSTGRES_PASSWORD=password timescale/timescaledb:latest-pg11
 ```
 > Quick note: if you are running Fedora, you can swap `docker` by `sudo podman` and are good to go :-)
+
+
+## Running the application inside Docker/Kubernetes
+Fireplace is packed into a linux container and supposed to run as one. The image is hosted on [quay.io](https://quay.io/xvzf/fireplace)
