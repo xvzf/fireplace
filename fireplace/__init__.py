@@ -10,3 +10,5 @@ from . import client
 from . import scheduler
 from . import helper
 from . import config
+
+from .__main__ import cli
