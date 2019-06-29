@@ -1,0 +1,42 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fireplace-client
+  namespace: fireplace
+spec:
+  selector:
+    app: fireplace
+    tier: client
+  ports:
+    - port: 9000
+      targetPort: 9000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fireplace-client
+  namespace: fireplace
+spec:
+  selector:
+    matchLabels:
+      app: fireplace
+      tier: client
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: fireplace
+        tier: client
+    spec:
+      containers:
+        - name: server
+          image: quay.io/xvzf/fireplace:latest
+          args: ["client", "--server=http://fireplace-server:8080/discovery/", "--name=client", "--host=0.0.0.0"]
+          imagePullPolicy: Always
+          resources:
+            limits:
+              memory: "256Mi"
+              cpu: "250m"
+          ports:
+            - containerPort: 9000

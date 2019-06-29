@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: fireplace-ingress
+  namespace: fireplace
+spec:
+  rules:
+    - host: server.fireplace.spankmewithcat6.de
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: fireplace-server
+              servicePort: 8080
+    - host: client.fireplace.spankmewithcat6.de
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: fireplace-client
+              servicePort: 9000

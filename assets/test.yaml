@@ -7,6 +7,12 @@ targets:
     threshold: 32.0
     name: "server1"
     every: 5.0
+    alert_interval: 10.0
+    email:
+      sender: test@example.com
+      subject: "Server not parsing data"
+      smtp_user: "bla"
+      smtp_password: "blabla"
 
 # PostgreSQL + TimescaleDB configuration
 database:
