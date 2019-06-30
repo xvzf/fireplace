@@ -26,4 +26,4 @@ class Sensor(AbstractSensor):
             self.sensor_addr, self.reg_temp, 2)
 
         # Little endian short, see https://docs.python.org/3/library/struct.html#format-characters
-        return struct.unpack("<h", b"".join([chr(b) for b in recv_buf]))[0] * 0.0625
+        return struct.unpack("<h", bytes(recv_buf))[0] * 0.0625
