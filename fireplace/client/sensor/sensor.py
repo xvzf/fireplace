@@ -23,7 +23,7 @@ class Sensor(AbstractSensor):
         """ Reads the temperature sensor """
         # Read the register containing the temperature (2 bytes)
         recv_buf = self.bus.read_i2c_block_data(
-            self.sensor_addr, self.reg_temp, len=2)
+            self.sensor_addr, self.reg_temp, 2)
 
         # Little endian short, see https://docs.python.org/3/library/struct.html#format-characters
         return struct.unpack("<h", recv_buf)[0] * 0.0625
