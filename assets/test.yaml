@@ -7,12 +7,13 @@ targets:
     threshold: 32.0
     name: "server1"
     every: 5.0
-    alert_interval: 10.0
-    email:
-      sender: test@example.com
-      subject: "Server not parsing data"
-      smtp_user: "bla"
-      smtp_password: "blabla"
+    # We do not want to flood the admin :-)
+    alert_interval: 15.0
+    # HTTP Post Request gets send to the alert_targets which contains
+    # sensor metadata as wenn as the current temperature which was abover
+    # the threshold
+    alert_targets:
+      - "http://localhost:9111/email"
 
 # PostgreSQL + TimescaleDB configuration
 database:

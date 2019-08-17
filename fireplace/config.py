@@ -6,6 +6,7 @@ try:
     from yaml import CLoader as Loader, CDumper as Dumper
 except ImportError:
     from yaml import Loader, Dumper
+from .target import Target
 from . import logger
 
 
@@ -16,15 +17,6 @@ class Database:
     user: str
     password: str
     database: str
-
-
-@dataclass
-class Target:
-    """ target config store """
-    url: str
-    threshold: float
-    name: str
-    every: float
 
 
 class Config:

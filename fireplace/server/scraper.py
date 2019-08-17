@@ -29,9 +29,13 @@ class Scraper:
                 # Add retrieved values to database
                 await MetricDAO.add_many(app.db, metrics)
 
+                max_temp = max([metric.temperature for metric in metrics])
+                if max_temp > target.threshold:
+                    target.temp_alert(max_temp)
+
             except ScrapeException as e:
                 logger.warning(f"Could not retrieve data from {target}")
-                pass
+                await target.unreachable_alert()
             except Exception as e:
                 logger.exception(e)
 

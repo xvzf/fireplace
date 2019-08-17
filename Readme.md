@@ -35,6 +35,60 @@ Options:
   --help          Show this message and exit.
 ```
 
+# Alerts triggered by the central (archive) server
+There are two types of alerts. Each alert triggers a `POST` request to a given URL endpoint. This enables easy integration for different messaging endpoints (e.g. one processor for E-Mail, one for Telegram, ...)
+
+Example configuration for alert targets:
+```yaml
+---
+targets:
+  - ...
+    alert_targets:
+      - "http://localhost:9111/postalerthere1"
+      - "http://localhost:9111/postalerthere2"
+```
+
+## Unreachable Alert
+This alert is triggered when the sensor is not reachable.
+The `POST` data is in JSON format and has the following schema:
+```json
+{
+  "sensor": "Sensor name",
+  "event": "unreachable",
+  "timestamp": "current time"
+}
+```
+
+## Temperature Alert
+This alert is triggered when the sensor is not reachable.
+The `POST` data is in JSON format and has the following schema:
+```json
+{
+  "sensor": "Sensor name",
+  "event": "max_temp_exceeded",
+  "threshold": "temperature threashold (float)",
+  "measured_temp": "measured temperature which exceeded the threashold",
+  "timestamp": "current time"
+}
+```
+
+### Example of an incoming alert
+> nc is **NOT** a valid option for receiving alerts, just for testing!
+This is an alert resulting from the example configuration located at `assets/test.yaml`:
+```
+[lola ~] nc -l 9111
+POST /email HTTP/1.1
+host: localhost:9111
+user-agent: python-http3/0.6.7
+accept: */*
+content-length: 94
+accept-encoding: gzip, deflate
+connection: keep-alive
+content-type: application/json
+
+{"sensor": "server1", "event": "unreachable", "timestamp": "2019-08-17T14:57:53.033172+00:00"}
+```
+
 
 # Getting a dev environment up and running
 ## Python setup
@@ -58,6 +112,10 @@ pip install -r requirements.txt
 After setting up docker is done, you can spin up an instance by executing:
 ```
 docker run -d --name timescaledb -p 127.0.0.1:5432:5432 -e POSTGRES_PASSWORD=password timescale/timescaledb:latest-pg11
+```
+The database has to be initialized. This can be done by this command:
+```
+cd assets && make
 ```
 > Quick note: if you are running Fedora, you can swap `docker` by `sudo podman` and are good to go :-)
 
