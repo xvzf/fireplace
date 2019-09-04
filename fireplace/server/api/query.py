@@ -9,6 +9,11 @@ from ..database import MetricDAO, Metric, Statistics
 from ...helper.api import query_arg
 from ...helper.json import dumps
 
+@api_v1.route("/targets")
+@doc.summary("List of all available targets")
+async def get_targets(request, target):
+    return json([t.name for t in request.app.fireplace.targets])
+
 
 @api_v1.route("/current/<target>")
 @doc.summary("Last data from target (based on config name)")
