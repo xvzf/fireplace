@@ -12,7 +12,7 @@ from ...helper.json import dumps
 @api_v1.route("/targets")
 @doc.summary("List of all available targets")
 async def get_targets(request, target):
-    return json([t.name for t in request.app.fireplace.targets])
+    return json([{"name": t.name, "threshold": t.threshold} for t in request.app.fireplace.targets])
 
 
 @api_v1.route("/current/<target>")
