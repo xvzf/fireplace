@@ -430,9 +430,11 @@
 						'Content-Type': 'json'
 					},
 				}).then(function successCallback(response) {
-					response.data.forEach( function (SensorName){
+					console.log(response.data)
+					response.data.map(s => s.name).forEach(function (SensorName){
 						$scope.SensorList.push(SensorName);
 					})
+					console.log($scope.SensorList)
 					return response;
 				  }, function errorCallback(response) {
 					console.log(response);
