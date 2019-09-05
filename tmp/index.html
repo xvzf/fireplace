@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>VerteilteSysteme</title>
+    <base href="/">
+    <!-- external css -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!-- end css -->
+    <!-- external scripts (better download later)-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0rc1/angular-route.min.js"></script>
+    <!--<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.1/Chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/0.5.5/chartjs-plugin-annotation.js"></script>
+    <!-- jquery for bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <!-- end scripts -->
+
+</head>
+<body ng-controller="IndexController">
+    <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
+        <a class="navbar-brand mr-1" href="index.html">Verteilte Systeme - Serverraum Monitoring</a>
+    </nav>
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <h1>Sensor-Einheiten: </h1>
+            </div>
+        </div>
+        <!-- data row for each sensor -->
+        <div ng-repeat="Sensor in SensorData">
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card mb-3">
+                        <div class="card-header" id="cardheader{{Sensor.ID}}">
+                            <i class="fas fa-chart-area"></i>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <h2>{{Sensor.Name}}</h2>
+                                </div>
+                            </div>
+
+                            <div class="row SensorBasicInfo">
+                                <!--Current-->
+                                <div class="col-xl-3 col-sm-6 mb-3">
+                                    <div class="card text-white bg-primary o-hidden h-100">
+                                        <div class="card-body">
+                                            <div class="mr-5">Current: </div>
+                                            <h2>{{Sensor.CurrentTemp}}°C</h2>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--Avg-->
+                                <div class="col-xl-3 col-sm-6 mb-3">
+                                    <div class="card text-white bg-success o-hidden h-100">
+                                        <div class="card-body">
+                                            <div class="mr-5">Average: </div>
+                                            <h2>{{Sensor.AvgTemp}}°C</h2>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!--Min-->
+                                <div class="col-xl-3 col-sm-6 mb-3">
+                                    <div class="card text-white bg-info o-hidden h-100">
+                                        <div class="card-body">
+                                            <div class="mr-5">Minimum: </div>
+                                            <h2>{{Sensor.MinTemp}}°C</h2>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!--Max-->
+                                <div class="col-xl-3 col-sm-6 mb-3">
+                                    <div class="card text-white bg-danger o-hidden h-100">
+                                        <div class="card-body">
+                                            <div class="mr-5">Maximum: </div>
+                                            <h2>{{Sensor.MaxTemp}}°C</h2>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- toggle chart button -->
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapse{{Sensor.ID}}" aria-expanded="false" aria-controls="collapseExample">
+                                        Verlauf anzeigen
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- card body -->
+                        <div class="card-body collapse" id="collapse{{Sensor.ID}}">
+                            <div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+                            <canvas id="Canvas{{Sensor.ID}}" width="1940" height="582" style="display: block; height: 291px; width: 970px;" class="chartjs-render-monitor"></canvas>
+                        </div>
+                        <div class="card-footer small text-muted">Last Update: {{Sensor.LastUpdated}}</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        
+    </div>
+
+
+    <!-- Angular Module + Controller (seperate later)-->
+    <script>
+        var app = angular.module('myApp', ['ngRoute']).controller('IndexController', function ($scope) {
+            $scope.message = 'Hello from IndexController';
+
+            //Array for all sensordata
+            $scope.SensorData = [];
+
+            //Models
+            function SensorInfo(ID, Name, CurrentTemp, AvgTemp, MinTemp, MaxTemp, TTStamps, LastUpdated ) {
+                this.ID = ID;
+                this.Name = Name;
+                this.CurrentTemp = CurrentTemp;
+                this.AvgTemp = AvgTemp;
+                this.MinTemp = MinTemp;
+                this.MaxTemp = MaxTemp;
+                this.TTStamps = TTStamps;
+                this.LastUpdated = LastUpdated;
+            }
+
+            function TTStamp(Time, Temp) {
+                this.Time = Time;
+                this.Temp = Temp;
+            };
+
+            //Models End
+
+            //Example Data for 1 Sensor || TODO Fill real data
+            //@Matthias: map datasets on "SensorInfo" and push all SensorInfo in "$scope.SensorData"
+
+            //1st dataset
+            $scope.ttstamps1 = [];
+            $scope.ttstamps1.push(new TTStamp("date1", 20));
+            $scope.ttstamps1.push(new TTStamp("date2", 24));
+            $scope.ttstamps1.push(new TTStamp("date3", 23));
+            $scope.ttstamps1.push(new TTStamp("date4", 25));
+            $scope.ttstamps1.push(new TTStamp("date5", 23));
+            //                                  ID, Name, CurrentTemp, AvgTemp, MinTemp, MaxTemp, TTStamps, LastUpdated
+            $scope.SensorInfo1 = new SensorInfo(1, "Sensor1", 22, 22, 20, 25, $scope.ttstamps1, "22.08.2019 15:10");
+
+            $scope.SensorData.push($scope.SensorInfo1);
+
+            //2nd dataset
+            $scope.ttstamps2 = [];
+            $scope.ttstamps2.push(new TTStamp("date1", 20));
+            $scope.ttstamps2.push(new TTStamp("date2", 23));
+            $scope.ttstamps2.push(new TTStamp("date3", 26));
+            $scope.ttstamps2.push(new TTStamp("date4", 31));
+            $scope.ttstamps2.push(new TTStamp("date5", 27));
+
+            $scope.SensorInfo2 = new SensorInfo(2, "Sensorname2", 27, 21, 19, 24, $scope.ttstamps2, "22.08.2019 15:09");
+
+            $scope.SensorData.push($scope.SensorInfo2);
+
+            //3rd dataset
+            $scope.ttstamps3 = [];
+            $scope.ttstamps3.push(new TTStamp("date1", 22));
+            $scope.ttstamps3.push(new TTStamp("date2", 23));
+            $scope.ttstamps3.push(new TTStamp("date3", 21));
+            $scope.ttstamps3.push(new TTStamp("date4", 21));
+            $scope.ttstamps3.push(new TTStamp("date5", 16));
+
+            $scope.SensorInfo3 = new SensorInfo(3, "Sensorname3", 16, 21, 19, 24, $scope.ttstamps3, "22.08.2019 15:11");
+
+            $scope.SensorData.push($scope.SensorInfo3);
+            //end example
+
+            //wait until canvas are created
+            window.onload = function () {
+            //charts
+                $scope.SensorData.forEach(function (Sensor) {
+                    //assign each sensorcanvas the data
+                    var ctx = document.getElementById('Canvas' + Sensor.ID).getContext('2d');
+                    var chart = new Chart(ctx, {
+                        //The type of chart we want to create
+                        type: 'line',
+
+                        //The data for our dataset
+                        data: {
+                            labels: Sensor.TTStamps.map(a => a.Time),
+                            datasets: [
+                                {
+                                    label: 'Temperaturverlauf ' + Sensor.Name,
+                                    backgroundColor: 'rgba(0, 123, 255, 0.3)',
+                                    borderColor: 'rgb(0, 123, 255)',
+                                    data: Sensor.TTStamps.map(a => a.Temp)
+                                }
+                            ]
+                        },
+
+                        //Configuration options go here
+                        options: {
+                            //Draw Lines for Avg/Max/Min Temp (needs chartjs annotation plugin)
+                            annotation: {
+                                annotations: [
+                                    {
+                                        type: 'line',
+                                        mode: 'horizontal',
+                                        scaleID: 'y-axis-0',
+                                        value: Sensor.AvgTemp,
+                                        borderColor: 'green',
+                                        borderWidth: 4
+                                    },
+                                    {
+                                        type: 'line',
+                                        mode: 'horizontal',
+                                        scaleID: 'y-axis-0',
+                                        value: Sensor.MaxTemp,
+                                        borderColor: 'red',
+                                        borderWidth: 4
+                                    },
+                                    {
+                                        type: 'line',
+                                        mode: 'horizontal',
+                                        scaleID: 'y-axis-0',
+                                        value: Sensor.MinTemp,
+                                        borderColor: 'rgb(0, 187, 255)',
+                                        borderWidth: 4
+                                    }
+                                ]
+                            }
+                        }
+                    });//chart end
+
+                    //alert cases (add more?)
+                    if (Sensor.CurrentTemp > Sensor.MaxTemp) {
+                        var CardHeader = document.getElementById('cardheader' + Sensor.ID);
+                        if (CardHeader != null) {
+                            CardHeader.style.backgroundColor = "rgb(206, 48, 41)    ";
+                            console.log("changed color of " + Sensor.ID);
+                        } else {
+                            console.log("cardheader" + Sensor.ID + " is null");
+                        }
+                    }
+                    if (Sensor.CurrentTemp < Sensor.MinTemp) {
+                        var CardHeader = document.getElementById('cardheader' + Sensor.ID);
+                        if (CardHeader != null) {
+                            CardHeader.style.backgroundColor = "rgb(0, 187, 255)";
+                            console.log("changed color of " + Sensor.ID);
+                        } else {
+                            console.log("cardheader" + Sensor.ID + " is null");
+                        }
+                    }
+                })//foreach end
+            }//onload end
+        })
+    </script>
+</body>
+</html>
