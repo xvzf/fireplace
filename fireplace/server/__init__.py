@@ -1,5 +1,7 @@
+import os
 import asyncio
 from sanic import Sanic
+from sanic.response import file
 from sanic_openapi import swagger_blueprint
 
 from .. import logger, config
@@ -25,8 +27,13 @@ def create_server(config_path: str):
         for target in app.fireplace.targets:
             s.schedule_every(app.fireplace.scrape_interval,
                              Scraper.get_handler(app, target))
-
+    
     app = Sanic("fireplace_server")
+
+    @app.route("/")
+    async def index(request):
+        return await file(os.path.join(os.path.dirname(__file__), 'views/index.html'))
+
     app.register_blueprint(api)
     app.register_blueprint(discovery)
     app.register_blueprint(swagger_blueprint)

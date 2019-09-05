@@ -31,7 +31,7 @@ class Scraper:
 
                 max_temp = max([metric.temperature for metric in metrics])
                 if max_temp > target.threshold:
-                    target.temp_alert(max_temp)
+                    await target.temp_alert(max_temp)
 
             except ScrapeException as e:
                 logger.warning(f"Could not retrieve data from {target}")
