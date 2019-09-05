@@ -15,8 +15,11 @@ from .api import api
 
 async def setup_client(app: Sanic, loop: asyncio.AbstractEventLoop):
 
+    # Initialize sensor
+    app.sensor = Sensor()
+
     async def measure():
-        val = await Sensor.read()
+        val = await app.sensor.get_temperature()
         app.buffer.add(Measurement(
             time=datetime.utcnow().replace(tzinfo=pytz.utc),
             temperature=val

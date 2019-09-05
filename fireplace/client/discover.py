@@ -11,8 +11,7 @@ async def get_config(url: str) -> config.Target:
         while True:
             try:
                 resp = await client.get(url)
-                if resp.status_code == 200:
-                    return config.Target(**json.loads(resp.text))
+                return config.Target(**json.loads(resp.text))
             except Exception as e:
                 logger.exception(e)
                 await asyncio.sleep(1)
