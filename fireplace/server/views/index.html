@@ -205,7 +205,7 @@
 
     <!-- Angular Module + Controller (seperate later)-->
     <script>
-        var app = angular.module('myApp', ['ngRoute']).controller('IndexController', function ($scope, $http, $rootScope) {
+        var app = angular.module('myApp', ['ngRoute']).controller('IndexController', function ($scope, $http) {
             $scope.message = 'Hello from IndexController';
 			$scope.counterSensors = 0;
 			$scope.secondsPerDay = 86400;
@@ -382,12 +382,13 @@
 		
 			//Get Daily Min/Max/Avg
 			$scope.getSensorDailyUltima = function(SensorName){
-				var response = $scope.callAPI($scope.base_url, 'GET', SensorName, $scope.secondsPerDay, 1, 0);
+				var response = $scope.callAPI($scope.base_url_api, 'GET', SensorName, $scope.secondsPerDay, 1, 0);
 				try{
 					var parsedResponse = JSON.parse(response);
 					//Only get first one in case of too many datasets
 					return parsedResponse[0];
 				}catch(err){
+					console.log(response);
 					console.log("Error in createSensorObjects/getSensorDailyUltima:" + err);
 				}
 			}
@@ -432,7 +433,10 @@
 				}).then(function successCallback(response) {
 					console.log(response.data)
 					response.data.map(s => s.name).forEach(function (SensorName){
-						$scope.SensorList.push(SensorName);
+						// let copy = $scope.SensorList.slice();
+						// copy.push(SensorName);
+						// $scope.SensorList = copy;
+						$scope.SensorList.push(SensorName)
 					})
 					console.log($scope.SensorList)
 					return response;
@@ -446,7 +450,7 @@
 			// method = GET/POST (string), sensorName(string), interval,later,offset 1,1,0
 			$scope.callAPI = function(base_url, method, sensorName, interval, latest, offset){
 				
-			    var CompleteUrl = base_url + '/stats/' + sensorName + '?intverval=' + interval + '&latest=' + latest + '&offset=' + offset;
+			    var CompleteUrl = base_url + '/stats/' + sensorName + '?interval=' + interval + '&latest=' + latest + '&offset=' + offset;
 				$http({
 					method: method,
 					url: CompleteUrl,
@@ -558,6 +562,7 @@
 			
 			
 			//End Main ###################################################
+			setTimeout(h =>  $scope.$apply(), 1000);
 			
 			
         })
