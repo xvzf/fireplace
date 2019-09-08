@@ -34,7 +34,7 @@
             </div>
         </div>
         <!-- data row for each sensor -->
-		<div ng-if="$scope.SensorList == null">
+		<div ng-if="SensorList == null">
 			<h3>Tja... Da ist wohl etwas schief gelaufen!</h3>
 		</div>
         <div ng-repeat="Sensor in SensorData">
@@ -232,7 +232,8 @@
                 this.UltMaxTemp = UltMaxTemp || -1;
 				this.AlertMinTemp = AlertMinTemp || -100;
 				this.AlertMaxTemp = AlertMaxTemp || 100;
-                this.TTStamps = TTStamps; //Array 
+                this.TTStamps = TTStamps; //Array +
+				
                 this.LastUpdated = LastUpdated;
 				this.interval = interval || 28800; //8hours
 				this.latest = latest || 8;
@@ -249,8 +250,9 @@
 			
 			//Create Sensor Objects and fill them with Data from API
 			$scope.createSensorObjects = function(){
-				$scope.SensorList.forEach(function (SensorName) {
-					
+				$scope.SensorList.forEach(function (Sensor) {
+					var SensorName = Sensor.name;
+					console.log(SensorName);
 					//### First get Daily Max/Min/Avg
 					//example: [{"time":"2019-08-28T00:00:00+00:00","min_temperature":20.0,"max_temperature":40.0,"avg_temperature":29.9}]
 					var responseDaily = $scope.getSensorDailyUltima(SensorName);
@@ -292,8 +294,8 @@
 					var CurrentTemp = $scope.getSensorCurrentTemp(SensorName);
 					
 					//Get Max/Min-TempAlert Values
-					var AlertMinTemp = 19; //TODO
-					var AlertMaxTemp = 40; //TODO
+					var AlertMinTemp = 0; //Not used in Serverraum Monitoring
+					var AlertMaxTemp = Sensor.threshold;
 					
 					
 					//Create LastUpdated Timestamp
@@ -327,7 +329,7 @@
 				
 				try{
 					var ttstamps = [];
-					var responseObject = JSON.parse(response);
+					var responseObject = response.data;
 					responseObject.forEach( function(kvpData){
 						ttstamps.push(new TTStamp(kvpData.Time, kvpData.avg_temperature));
 					});
@@ -386,6 +388,8 @@
 				try{
 					var parsedResponse = JSON.parse(response);
 					//Only get first one in case of too many datasets
+					console.log(response);
+					console.log(parsedResponse);
 					return parsedResponse[0];
 				}catch(err){
 					console.log(response);
@@ -398,6 +402,7 @@
 				var response = $scope.callAPI($scope.base_url_api, 'GET', SensorName, Interval, 1, 0);
 				try{
 					var parsedResponse = JSON.parse(response);
+					console.log(parsedResponse);
 					//Only get first one in case of too many datasets
 					return parsedResponse[0];
 				}catch(err){
@@ -422,8 +427,9 @@
 			//API Calls %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 			
 			$scope.getSensorList = function (){
+			
+				const CompleteUrl = $scope.base_url_api + '/targets';
 				
-				var CompleteUrl = $scope.base_url_api + '/targets';
 				$http({
 					method: 'GET',
 					url: CompleteUrl,
@@ -431,19 +437,15 @@
 						'Content-Type': 'json'
 					},
 				}).then(function successCallback(response) {
-					console.log(response.data)
-					response.data.map(s => s.name).forEach(function (SensorName){
-						// let copy = $scope.SensorList.slice();
-						// copy.push(SensorName);
-						// $scope.SensorList = copy;
-						$scope.SensorList.push(SensorName)
-					})
-					console.log($scope.SensorList)
+					$scope.SensorList = response.data;
+					console.log(response.data);
+					$scope.createSensorObjects();
 					return response;
 				  }, function errorCallback(response) {
 					console.log(response);
 					return null;
 				});
+				
 			}
 			
 			//url example: http://server.fireplace.spankmewithcat6.de/v1/api/stats/client?interval=1&latest=1&offset=0
@@ -558,11 +560,10 @@
 			
 			//Main Call ###################################################
 			$scope.getSensorList();
-			$scope.createSensorObjects();
 			
 			
 			//End Main ###################################################
-			setTimeout(h =>  $scope.$apply(), 1000);
+			//setTimeout(h =>  $scope.$apply(), 1000);
 			
 			
         })
