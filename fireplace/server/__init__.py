@@ -34,6 +34,10 @@ def create_server(config_path: str):
     async def index(request):
         return await file(os.path.join(os.path.dirname(__file__), 'views/index.html'))
 
+    @app.route("/main.js")
+    async def main_js(request):
+        return await file(os.path.join(os.path.dirname(__file__), 'views/main.js'))
+
     app.register_blueprint(api)
     app.register_blueprint(discovery)
     app.register_blueprint(swagger_blueprint)

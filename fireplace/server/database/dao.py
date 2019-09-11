@@ -50,6 +50,7 @@ class MetricDAO:
                 order by _time desc
                 limit $3
             ) as aggregated
+            order by time asc
             """,
             name,
             interval_seconds,
