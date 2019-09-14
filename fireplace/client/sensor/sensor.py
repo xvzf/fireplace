@@ -27,7 +27,10 @@ try:
                 self.sensor_addr, self.reg_temp, 2)
 
             # Little endian short, see https://docs.python.org/3/library/struct.html#format-characters
-            return struct.unpack("<h", bytes(recv_buf))[0] * 0.0625
+            # return struct.unpack("<h", bytes(recv_buf))[0] * 0.0625
+
+            # Das Multiplizieren mit 0.0625 ist nicht mehr relevant
+            return struct.unpack("<h", bytes(recv_buf))[0]
 except:
     logger.warn("smbus library is not available/installed, fallback to dummy sensor")
 
