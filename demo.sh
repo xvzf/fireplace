@@ -21,7 +21,7 @@ tmux send-keys ". ./venv/bin/activate && python entrypoint.py client --name sens
 
 # Dummy for showing incoming alerts
 tmux new-window -t $SESSION:2 -n "Alerts"
-tmux send-keys ". ./venv/bin/activate && python ./assets/demo/test.py" C-m
+tmux send-keys ". ./venv/bin/activate && python ./assets/demo/telegram.py" C-m
 
 # Attach to the session
 tmux -2 attach-session -t $SESSION
