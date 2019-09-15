@@ -22,7 +22,7 @@ try:
         
         def _reset_sensor(self):
             self.bus.read_i2c_block_data(self.sensor_addr, 0xEE, 2)
-            self.bus.read_i2c_word_data(self.sensor_addr, 0xAA, 2)
+            self.bus.read_word_data(self.sensor_addr, 0xAA, 2)
 
         async def get_temperature(self):
             """ Reads the temperature sensor """
