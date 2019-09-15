@@ -29,10 +29,14 @@ try:
             # Reset sensor since it is reading invalid stuff all the time :(
             self._reset_sensor()
             # Read the register containing the temperature (2 bytes)
-            recv_buf = self.bus.read_word_data(
+            tmp = self.bus.read_word_data(
                 self.sensor_addr, self.reg_temp, 2)
 
-            return recv_buf / 1600.0
+            val = tmp & 0x00FF 
+            if tmp & 0xFF00 > 0:
+                val + 0.5
+
+            return val
 except:
     logger.warn("smbus library is not available/installed, fallback to dummy sensor")
 
