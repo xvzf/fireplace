@@ -29,8 +29,10 @@ try:
             # Reset sensor since it is reading invalid stuff all the time :(
             self._reset_sensor()
             # Read the register containing the temperature (2 bytes)
-            recv_buf = self.bus.read_i2c_block_data(
+            recv_buf = self.bus.read_word_data(
                 self.sensor_addr, self.reg_temp, 2)
+
+            print(recv_buf)
 
             # Little endian short, see https://docs.python.org/3/library/struct.html#format-characters
             # return struct.unpack("<h", bytes(recv_buf))[0] * 0.0625
