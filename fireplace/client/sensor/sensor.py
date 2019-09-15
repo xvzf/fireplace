@@ -1,6 +1,7 @@
 import struct
 import random
 from . import AbstractSensor
+from . import Countermeasure
 from .. import logger
 try:
     import smbus
@@ -20,6 +21,7 @@ try:
             self.bus = smbus.SMBus(channel)
             self.sensor_addr = 0x48
 
+
         async def get_temperature(self):
             """ Reads the temperature sensor """
             # Read the register containing the temperature (2 bytes)
@@ -27,10 +29,11 @@ try:
                 self.sensor_addr, self.reg_temp, 2)
 
             # Little endian short, see https://docs.python.org/3/library/struct.html#format-characters
-            # return struct.unpack("<h", bytes(recv_buf))[0] * 0.0625
-
-            # Das Multiplizieren mit 0.0625 ist nicht mehr relevant
             return struct.unpack("<h", bytes(recv_buf))[0]
+            
+            # Hier die Gegenmassnahme starten falls Temperatur zu hoch? Wie komme ich an die Maximaltemperatur?
+
+            # Hier die Gegenmassnahme stoppen falls die Temperatur wieder unter der Maximaltemperatur liegt
 except:
     logger.warn("smbus library is not available/installed, fallback to dummy sensor")
 
