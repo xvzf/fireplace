@@ -32,13 +32,7 @@ try:
             recv_buf = self.bus.read_word_data(
                 self.sensor_addr, self.reg_temp, 2)
 
-            print(recv_buf)
-
-            # Little endian short, see https://docs.python.org/3/library/struct.html#format-characters
-            # return struct.unpack("<h", bytes(recv_buf))[0] * 0.0625
-
-            # Das Multiplizieren mit 0.0625 ist nicht mehr relevant
-            return struct.unpack("<h", bytes(recv_buf))[0]
+            return recv_buf / 1600.0
 except:
     logger.warn("smbus library is not available/installed, fallback to dummy sensor")
 
