@@ -3,7 +3,7 @@ import random
 from . import AbstractSensor
 from .. import logger
 try:
-    import smbus
+    import smbus2
 
     class Sensor(AbstractSensor):
         """ Reads the temperature sensor """
@@ -17,7 +17,7 @@ try:
             :param channel: I2C Bus Channel
             :param sensor_addr: Sensor address
             """
-            self.bus = smbus.SMBus(channel)
+            self.bus = smbus2.SMBus(channel)
             self.sensor_addr = sensor_addr
         
         def _reset_sensor(self):
