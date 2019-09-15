@@ -18,10 +18,16 @@ try:
             :param sensor_addr: Sensor address
             """
             self.bus = smbus.SMBus(channel)
-            self.sensor_addr = 0x48
+            self.sensor_addr = sensor_addr
+        
+        def _reset_sensor(self):
+            self.bus.read_i2c_block_data(self.sensor_addr, 0xEE, 2)
+            self.bus.read_i2c_word_data(self.sensor_addr, 0xAA, 2)
 
         async def get_temperature(self):
             """ Reads the temperature sensor """
+            # Reset sensor since it is reading invalid stuff all the time :(
+            self._reset_sensor()
             # Read the register containing the temperature (2 bytes)
             recv_buf = self.bus.read_i2c_block_data(
                 self.sensor_addr, self.reg_temp, 2)
