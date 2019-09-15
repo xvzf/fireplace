@@ -4,7 +4,7 @@ from . import AbstractSensor
 from . import Countermeasure
 from .. import logger
 try:
-    import smbus
+    import smbus2
 
     class Sensor(AbstractSensor):
         """ Reads the temperature sensor """
@@ -18,22 +18,26 @@ try:
             :param channel: I2C Bus Channel
             :param sensor_addr: Sensor address
             """
-            self.bus = smbus.SMBus(channel)
-            self.sensor_addr = 0x48
-
+            self.bus = smbus2.SMBus(channel)
+            self.sensor_addr = sensor_addr
+        
+        def _reset_sensor(self):
+            self.bus.read_i2c_block_data(self.sensor_addr, 0xEE, 2)
+            self.bus.read_word_data(self.sensor_addr, 0xAA, 2)
 
         async def get_temperature(self):
             """ Reads the temperature sensor """
+            # Reset sensor since it is reading invalid stuff all the time :(
+            self._reset_sensor()
             # Read the register containing the temperature (2 bytes)
-            recv_buf = self.bus.read_i2c_block_data(
+            tmp = self.bus.read_word_data(
                 self.sensor_addr, self.reg_temp, 2)
 
-            # Little endian short, see https://docs.python.org/3/library/struct.html#format-characters
-            return struct.unpack("<h", bytes(recv_buf))[0]
-            
-            # Hier die Gegenmassnahme starten falls Temperatur zu hoch? Wie komme ich an die Maximaltemperatur?
+            val = tmp & 0x00FF 
+            if tmp & 0xFF00 > 0:
+                val + 0.5
 
-            # Hier die Gegenmassnahme stoppen falls die Temperatur wieder unter der Maximaltemperatur liegt
+            return val
 except:
     logger.warn("smbus library is not available/installed, fallback to dummy sensor")
 

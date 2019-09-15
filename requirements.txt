@@ -7,4 +7,4 @@ sanic-openapi>=0.5.3
 Click>=7.0
 pytz>=2019.1
 http3>=0.6.1
-smbus==1.1.post2
+smbus2>=0.3.0
